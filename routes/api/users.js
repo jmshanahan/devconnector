@@ -4,12 +4,13 @@ const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+// const _ = require('lodash');
 const keys = require('../../config/keys');
 const User = require('../../models/User');
 
 // Load Input Validation
-// const validateRegisterInput = require('../../validation/register');
-// const validateLoginInput = require('../../validation/login');
+const validateRegisterInput = require('../../validation/register');
+const validateLoginInput = require('../../validation/login');
 
 // @route GET api/users/test
 // @desc  Test user route
@@ -20,13 +21,12 @@ router.get('/test', (req, res) => res.json({ message: 'User works' }));
 // @desc  Register user
 // @access Public
 router.post('/register', (req, res) => {
-  // let { errors, isValid } = validateRegisterInput(req.body);
-  // if (!isValid) {
-  //   return res.status(400).json(errors);
-  // }
+  let { errors, isValid } = validateRegisterInput(req.body);
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
-      //errors.email = 'Email already exists';
       return res.status(400).json({ email: 'Email already exists' });
     } else {
       const avatar = gravatar.url(req.body.email, {
@@ -58,18 +58,19 @@ router.post('/register', (req, res) => {
 // @desc  Ligin User / Returning JWT Token
 // @access Public
 router.post('/login', (req, res) => {
-  //let { errors, isValid } = validateLoginInput(req.body);
+  let { errors, isValid } = validateLoginInput(req.body);
 
-  // if (!isValid) {
-  //   return res.status(400).json(errors);
-  // }
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
 
   const { email, password } = req.body;
   User.findOne({ email }).then(user => {
     if (!user) {
-      errors.email = 'User not found';
+      // errors.email = 'User not found';
       return res.status(404).json({ email: 'User not found' });
     }
+
     //Check Password
     bcrypt.compare(password, user.password).then(isMatch => {
       if (isMatch) {
