@@ -1,8 +1,9 @@
 const validator = require('validator');
-// const isEmpty = require('./is-empty');
+
 const _ = require('lodash');
+
 module.exports = function validateRegisterInput(data) {
-  let errors = {};
+  const errors = {};
 
   const name = _.trim(data.name);
   const email = _.trim(data.email);

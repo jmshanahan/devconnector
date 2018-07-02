@@ -3,7 +3,7 @@ const validator = require('validator');
 const _ = require('lodash');
 
 module.exports = function validateLoginInput(data) {
-  let errors = {};
+  const errors = {};
 
   // data.email = !isEmpty(data.email) ? data.email : '';
   // data.password = !isEmpty(data.password) ? data.password : '';

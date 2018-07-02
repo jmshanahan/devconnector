@@ -1,0 +1,12 @@
+{
+  "extends": ["airbnb", "prettier"],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "arrow-parens": ["error", "as-needed"],
+    "operator-linebreak": ["error", "after"],
+    "no-console": ["error", { "allow": ["warn", "log"] }]
+  }
+}
