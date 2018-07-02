@@ -19,7 +19,7 @@ module.exports = passport => {
             return done(null, false);
           }
         })
-        .catch(err => condole.log(err));
+        .catch(err => console.log(err));
     })
   );
 };

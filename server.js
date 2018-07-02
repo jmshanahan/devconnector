@@ -29,4 +29,14 @@ app.use('/api/posts', posts);
 
 const port = process.env.PORT || 5000;
 
+var gracefulExit = function() {
+  mongoose.connection.close(function() {
+    console.log('Mongoose default connection with DB closed:');
+    process.exit(0);
+  });
+};
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', gracefulExit).on('SIGTERM', gracefulExit);
+
 app.listen(port, () => console.log(`Server is running on port ${port}`));
