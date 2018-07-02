@@ -30,6 +30,47 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
   return res;
 });
 
+// @route GET api/profile/handle/:handle
+// @desc  Get profile by handle
+// @access Public
+router.get('/handle/:handle', (req, res) => {
+  const errors = {};
+  console.log(`The name of handle is ${req.params.handle}`);
+  Profile.findOne({ handle: req.params.handle })
+    .populate('user', ['name', 'avatar'])
+    .then(profile => {
+      if (!profile) {
+        errors.noprofile = 'There is no profile for this user';
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => {
+      const modifiedErr = Object.assign({}, err, { profile: 'There is no profile for this user' });
+      res.status(404).json(modifiedErr);
+    });
+});
+
+// @route GET api/profile/user/:user_id
+// @desc  Get profile by user ID
+// @access Public
+router.get('/user/:user_id', (req, res) => {
+  const errors = {};
+  Profile.findOne({ user: req.params.user_id })
+    .populate('user', ['name', 'avatar'])
+    .then(profile => {
+      if (!profile) {
+        errors.noprofile = 'There is no profile for this user';
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => {
+      const modifiedErr = Object.assign({}, err, { profile: 'There is no profile for this user' });
+      res.status(404).json(modifiedErr);
+    });
+});
+
 // @route POST api/profile
 // @desc  Create or Edit user profile
 // @access Private
@@ -62,7 +103,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
       // Update
       Profile.findOneAndUpdate({ user: req.user.id }, { $set: profileFields }, { new: true })
         .then(userprofile => res.json(userprofile))
-        .catch(err => err);
+        .catch(err => res.status(404).json(err));
     } else {
       // Create
 
@@ -73,9 +114,12 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
           // Save profile
           new Profile(profileFields).save().then(newProfile => res.json(newProfile));
         })
-        .catch(err => err);
+        .catch(err => {
+          const modifiedErr = Object.assign({}, err, { handle: 'There is no handle for this user' });
+          res.status(404).json(modifiedErr);
+        });
     }
   });
-  return { error: 'Unexpected error' };
+  return res.status(400).json({ error: 'Unexpected error' });
 });
 module.exports = router;
